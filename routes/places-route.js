@@ -2,26 +2,20 @@ const express = require('express');
 
 const router = express.Router();
 
+const placesController = require('../controllers/places-controller');
+
 // getting place by id
-router.get('/:pid', (
-    req
-    , res
-    , next
-) => {
-    if (!req.params.pid){
-        res.status(404).json({msg: "No Matched Place !!!"})
-    }
-    res.status(200).json({msg: "it is json response for getting place by id !!!" + req.params.pid})
-});
-
-
+router.get('/:pid', placesController.getPlaceById);
 // getting place by user id
-router.get('/user/:uid', (
-    req
-    , res
-    , next
-) => {
-    res.json({msg: "it is json response for getting place by user id !!!" + req.params.uid})
-})
+router.get('/user/:uid', placesController.getPlaceByUserId)
+
+// create a new place using post request
+router.post('/', placesController.createNewPlace);
+
+// patch request to update place
+router.patch('/:pid', placesController.updatePlace);
+
+// delete request to handle delete process
+router.delete('/:pid', placesController.deletePlace);
 
 module.exports = router;
