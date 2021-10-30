@@ -1,5 +1,5 @@
 const HttpError = require("../model/http_error");
-const placeModel = require('../model/place');
+const PlaceModel = require('../model/place');
 
 const getPlaceById = async (req, res, next) => {
     // get place id from request param
@@ -8,7 +8,7 @@ const getPlaceById = async (req, res, next) => {
     // check place is found or not (try - catch)
     let place;
     try {
-        place = await placeModel.findById(placeID);
+        place = await PlaceModel.findById(placeID);
     } catch (e) {
         return next(new HttpError('Something went wrong', 500));
     }
@@ -27,16 +27,28 @@ const getPlaceByUserId = (req, res, next) => {
         .json({msg: "it is json response for getting place by user id !!!" + req.params.uid});
 };
 
-const createNewPlace = (req, res, next) => {
-    const {title, description, location, address, creator} = req.body;
-    // console.log(req.body);
+const createNewPlace = async (req, res, next) => {
+    const {title, description, location, address} = req.body;
+    console.log(req.body);
     // create a new place from destructed request body
     const createdPlace = {
         title,
         description,
         location,
         address,
-        creator,
+    }
+    // insert place in mongodb
+    try {
+        const mmyPlace = new PlaceModel(createdPlace)
+        await mmyPlace.save()
+        console.log("inserted<<<<")
+    } catch (e) {
+        res.status(400)
+            .json({
+                code: 400,
+                message: "Bad Request"
+            });
+        return
     }
 
     // if post request processed successfully reply with json response with success state

@@ -23,9 +23,13 @@ app.use((error, req, res, next) => {
     res.json({code: error.code || 500, message: error.message || 'SOMETHING went WRONG'})
 })
 // app.listen(3000);
-
 // mongoose.connect('mongodb://username:password@host:port/database?options...', {useNewUrlParser: true});
-mongoose.connect('mongodb://localhost:27017/mern-starter-db', {useNewUrlParser: true})
+
+// mongoose.connect('mongodb://localhost:27017/mern-starter-db', {useNewUrlParser: true})
+const password = encodeURIComponent('BBC@29012019')
+const username = 'muhammad1339'
+const uri = `mongodb+srv://${username}:${password}@cluster-mernstarter.uezyt.mongodb.net/mernstarter?retryWrites=true&w=majority`
+mongoose.connect(uri)
     .then(() => {
         // connection established
         app.listen(3000);
