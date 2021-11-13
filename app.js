@@ -1,20 +1,24 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+
 // import from my own files
-const storesRoutes = require('./routes/stores-route')
-const userRoutes = require('./routes/users-routes')
-const categoryRoutes = require('./routes/categories-router')
+const userRoute = require('./routes/user-router')
+const categoryRoute = require('./routes/category-router')
+const storeRoute = require('./routes/store-router')
+const productRoute = require('./routes/product-router')
+
 const HttpError = require('./model/http-error-model');
 
 const app = express();
 
 app.use(bodyParser.json());
 
-app.use('/api/category', categoryRoutes);
-// app.use('/api/store', storesRoutes);
+app.use('/api/user', userRoute);
+app.use('/api/category', categoryRoute);
+app.use('/api/store', storeRoute);
+app.use('/api/product', productRoute);
 
-// app.use('/api/user', userRoutes);
 // add middleware for unsupported routes
 app.use((req, res, next) => {
     throw new HttpError("This routes is not found", 404);

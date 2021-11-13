@@ -1,5 +1,5 @@
 const HttpError = require("../model/http-error-model");
-const StoreModel = require('../model/stores-model');
+const StoreModel = require('../model/store');
 
 const getStoreById = async (req, res, next) => {
     // get store id from request param
@@ -19,23 +19,42 @@ const getStoreById = async (req, res, next) => {
     }
 
     res.status(200)
-        .json({msg: "store found successfully", code: 200, store});
+        .json({message: "store found successfully", code: 200, store: store.toObject({getters: true})});
 };
 
-const getStoreByUserId = (req, res, next) => {
+const getStoreByOwnerId = async (req, res, next) => {
+    // provided owner id should be from type object id that has specific length
+    const ownerId = req.params.owner_id
+    let resultStore;
+    try {
+        //same => StoreModel.findOne({ownerId:ownerId}) exec() is optional
+        resultStore = await StoreModel.find({ownerId}).exec();
+    } catch (e) {
+        return next(new HttpError(`something went wrong`, 500));
+    }
+    // if store not found
+    if (!resultStore || resultStore.length === 0) {
+        return next(new HttpError('Store with provided owner id not found', 404));
+    }
     res.status(200)
-        .json({msg: "it is json response for getting store by user id !!!" + req.params.uid});
+        .json({
+            message: "get store by owner id successfully",
+            code: 200,
+            stores: resultStore.map(store => store.toObject({getters: true}))
+        });
 };
 
 const createNewStore = async (req, res, next) => {
-    const {name, description, location, address} = req.body;
+    const {name, description, avatarPath, location, address, ownerId} = req.body;
     // console.log(req.body);
     // create a new store from destructed request body
     const createdStore = {
         name,
         description,
+        avatarPath,
         location,
         address,
+        ownerId
     };
     // insert store in mongodb
     try {
@@ -46,7 +65,7 @@ const createNewStore = async (req, res, next) => {
         res.status(400)
             .json({
                 code: 400,
-                message: e.message
+                message: "bad request"
             });
         return;
     }
@@ -75,7 +94,7 @@ const deleteStore = (req, res, next) => {
 }
 // multi export
 exports.getStoreById = getStoreById;
-exports.getStoreByUserId = getStoreByUserId;
+exports.getStoreByOwnerId = getStoreByOwnerId;
 exports.createNewStore = createNewStore;
 exports.updateStore = updateStore;
 exports.deleteStore = deleteStore;

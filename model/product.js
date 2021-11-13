@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const category = require('./categories-model');
-const store = require('./categories-model');
+const category = require('./category');
+const store = require('./category');
 
 const modelName = 'Product';
 

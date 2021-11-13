@@ -1,5 +1,5 @@
 const HttpError = require("../model/http-error-model");
-const CategoryModel = require('../model/categories-model');
+const CategoryModel = require('../model/category');
 
 const createNewCategory = async (req, res, next) => {
     const {name, avatarPath} = req.body;
@@ -23,7 +23,7 @@ const createNewCategory = async (req, res, next) => {
         .json({
             code: 201,
             message: "category Created Successfully",
-            store: categoryFromBody
+            category: categoryFromBody.toObject({getters: true})
         });
 }
 
@@ -37,11 +37,11 @@ const getCategoryById = async (req, res, next) => {
     }
     // if category not found
     if (!resultCategory) {
-        return next(new HttpError('Store with provided id not found', 404));
+        return next(new HttpError('Category with provided id not found', 404));
     }
 
     res.status(200)
-        .json({message: "category found successfully", code: 200, resultCategory});
+        .json({message: "category found successfully", code: 200, category: resultCategory});
 }
 
 
@@ -54,11 +54,11 @@ const getAllCategories = async (req, res, next) => {
     }
     // if category not found
     if (!resultCategories) {
-        return next(new HttpError('Store with provided id not found', 404));
+        return next(new HttpError('Categories not found', 404));
     }
 
     res.status(200)
-        .json({message: "category found successfully", code: 200, resultCategories});
+        .json({message: "category found successfully", code: 200, categories: resultCategories});
 }
 
 
@@ -79,7 +79,11 @@ const updateCategoryById = async (req, res, next) => {
     }
 
     res.status(200)
-        .json({message: "category updated successfully", code: 200, updatedCategory});
+        .json({
+            message: "category updated successfully",
+            code: 200,
+            updatedCategory: updatedCategory.toObject({getters: true})
+        });
 }
 
 

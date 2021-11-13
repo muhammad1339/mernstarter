@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const categoryController = require('../controllers/categories-controller');
+const categoryController = require('../controllers/category-controller');
 
 // post new category
 router.post('/', categoryController.createNewCategory);
