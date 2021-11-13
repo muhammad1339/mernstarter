@@ -4,13 +4,15 @@ const mongoose = require('mongoose');
 // import from my own files
 const storesRoutes = require('./routes/stores-route')
 const userRoutes = require('./routes/users-routes')
+const categoryRoutes = require('./routes/categories-router')
 const HttpError = require('./model/http-error-model');
 
 const app = express();
 
 app.use(bodyParser.json());
 
-app.use('/api/store', storesRoutes);
+app.use('/api/category', categoryRoutes);
+// app.use('/api/store', storesRoutes);
 
 // app.use('/api/user', userRoutes);
 // add middleware for unsupported routes

@@ -14,6 +14,6 @@ const storeSchema = new Schema({
         lng: {type: Number, required: true}
     },
     creator: {type: mongoose.Types.ObjectId, required: false, ref: user.modelName}
-});
+}, {timestamps: {createdAt: 'createdAt'}});
 
 module.exports = mongoose.model(modelName, storeSchema);

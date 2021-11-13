@@ -16,6 +16,6 @@ const productSchema = new Schema({
     avatarPath: {type: String, required: true},
     categoryId: {type: mongoose.Types.ObjectId, required: true, ref: category.modelName},
     storeId: {type: mongoose.Types.ObjectId, required: true, ref: store.modelName},
-});
+}, {timestamps: {createdAt: 'createdAt'}});
 
 module.exports = mongoose.model(modelName, productSchema)

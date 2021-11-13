@@ -11,6 +11,6 @@ const userSchema = new Schema({
     password: {type: String, required: true},
     avatarPath: {type: String, required: true},
     address: {type: String, required: true},
-});
+}, {timestamps: {createdAt: 'createdAt'}});
 
 module.exports = mongoose.model(modelName, userSchema);

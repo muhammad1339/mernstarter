@@ -3,7 +3,7 @@ const StoreModel = require('../model/stores-model');
 
 const getStoreById = async (req, res, next) => {
     // get store id from request param
-    let storeID = req.params.pid;
+    let storeID = req.params.store_id;
     // query store by id
     // check store is found or not (try - catch)
     let store;
