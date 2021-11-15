@@ -13,7 +13,7 @@ router.get('/', categoryController.getAllCategories);
 router.get('/:category_id', categoryController.getCategoryById);
 
 // update category by id
-router.post('/:category_id', categoryController.updateCategoryById);
+router.patch('/:category_id', categoryController.updateCategoryById);
 
 // delete category by id
 router.delete('/:category_id', categoryController.deleteCategoryById);

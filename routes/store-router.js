@@ -1,16 +1,16 @@
-const express = require('express');
+const express = require("express");
 
 const router = express.Router();
 
-const storesController = require('../controllers/store-controller');
+const storesController = require("../controllers/store-controller");
 
 // getting store by id
-router.get('/:store_id', storesController.getStoreById);
+router.get("/:store_id", storesController.getStoreById);
 // getting store by user id
-router.get('/user/:owner_id', storesController.getStoreByOwnerId);
+router.get("/user/:owner_id", storesController.getStoreByOwnerId);
 
 // create a new store using post request
-router.post('/', storesController.createNewStore);
+router.post("/", storesController.createNewStore);
 
 // patch request to update place
 // router.patch('/:store_id', storesController.updateStore);

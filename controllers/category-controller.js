@@ -23,7 +23,7 @@ const createNewCategory = async (req, res, next) => {
         .json({
             code: 201,
             message: "category Created Successfully",
-            category: categoryFromBody.toObject({getters: true})
+            category: categoryFromBody
         });
 }
 
@@ -63,45 +63,68 @@ const getAllCategories = async (req, res, next) => {
 
 
 const updateCategoryById = async (req, res, next) => {
-    const categoryId = req.category_id;
-    const newCategoryName = req.body.name;
-    let updatedCategory;
+    if (!req.body || (!req.body.name && !req.body.avatarPath)) {
+        // 204 No Content
+        return next(new HttpError('nothing to update', 210));
+    }
+    const categoryId = req.params.category_id;
+    const newName = req.body.name;
+    const newAvatarPath = req.body.avatarPath;
+    let category;
     try {
-        updatedCategory = await CategoryModel.findOneAndUpdate({
-            "id": categoryId
-        }, {name: newCategoryName}).exec();
+        category = await CategoryModel.findById(categoryId);
     } catch (e) {
         return next(new HttpError('Something went wrong', 500));
     }
     // if category not found
-    if (!updatedCategory) {
+    if (!category) {
         return next(new HttpError('Category with provided id not found', 404));
     }
 
+    let updatedCat;
+    try {
+        console.log("<<<<<<<<<<<<<<<<<- PATCH ->>>>>>>>>>>>>>>>>");
+        console.log(req.body);
+        if (newName && newName.length > 0) category.name = newName;
+        if (newAvatarPath && newAvatarPath.length > 0) category.avatarPath = newAvatarPath;
+        updatedCat = await category.save();
+        // console.log(updatedCat.toJSON())
+    } catch (e) {
+        return next(new HttpError('something went wrong, could not update the category', 500));
+    }
     res.status(200)
         .json({
             message: "category updated successfully",
             code: 200,
-            updatedCategory: updatedCategory.toObject({getters: true})
+            category: category.toObject({getters: true})
         });
 }
 
 
 const deleteCategoryById = async (req, res, next) => {
-    const categoryId = req.category_id;
-    let deletedCategory;
+
+    const categoryId = req.params.category_id;
+    let category;
     try {
-        deletedCategory = await CategoryModel.deleteOne({"id": categoryId});
+        category = await CategoryModel.findById(categoryId);
     } catch (e) {
         return next(new HttpError('Something went wrong', 500));
     }
     // if category not found
-    if (!deletedCategory) {
+    if (!category) {
         return next(new HttpError('Category with provided id not found', 404));
     }
 
+    try {
+          await category.remove();
+    } catch (e) {
+        return next(new HttpError('something went wrong, could not update the category', 500));
+    }
     res.status(200)
-        .json({message: "category deleted successfully", code: 200, deletedCategory});
+        .json({
+            message: "category deleted successfully",
+            code: 200
+        });
 }
 
 
