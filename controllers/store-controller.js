@@ -1,5 +1,7 @@
+const mongoose = require("mongoose");
 const HttpError = require("../model/http-error-model");
 const StoreModel = require("../model/store");
+const UserModel = require("../model/user");
 
 const getStoreById = async (req, res, next) => {
   // get store id from request param
@@ -49,7 +51,6 @@ const getStoreByOwnerId = async (req, res, next) => {
 const createNewStore = async (req, res, next) => {
   const { name, description, avatarPath, location, address, ownerId } =
     req.body;
-  // console.log(req.body);
   // create a new store from destructed request body
   const createdStore = {
     name,
@@ -59,17 +60,35 @@ const createNewStore = async (req, res, next) => {
     address,
     ownerId,
   };
-  // insert store in mongodb
+  console.log(ownerId);
+  // check if the owner id (user) exists
+  let owner;
   try {
+    owner = await UserModel.findById(ownerId);
+  } catch (error) {
+    console.log(error);
+    return next(
+      new HttpError("Failed to create new store with this owner", 500)
+    );
+  }
+  if (!owner) {
+    return next(new HttpError("this owner is no longer availabe", 404));
+  }
+  // insert store in mongodb and update user stores
+  try {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
     const storeModel = new StoreModel(createdStore);
-    await storeModel.save();
+    await storeModel.save({ session: session });
+    owner.stores.push(storeModel);
+    await owner.save();
+    await session.commitTransaction();
     console.log("inserted<<<<");
   } catch (e) {
-    res.status(400).json({
-      code: 400,
-      message: "bad request",
-    });
-    return;
+    return next(
+      new HttpError("Failed to create new store with this owner", 500)
+    );
   }
 
   // if post request processed successfully reply with json response with success state

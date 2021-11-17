@@ -14,11 +14,7 @@ const storeSchema = new Schema(
       lat: { type: Number, required: true },
       lng: { type: Number, required: true },
     },
-    ownerId: {
-      type: mongoose.Types.ObjectId,
-      required: false,
-      ref: user.modelName,
-    },
+    ownerId: { type: mongoose.Types.ObjectId, required: true, ref: 'User' },
   },
   { timestamps: { createdAt: "createdAt" } }
 );
