@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const HttpError = require("../model/http-error-model");
 const StoreModel = require("../model/store");
-const UserModel = require("../model/user");
+const User = require("../model/user");
 
 const getStoreById = async (req, res, next) => {
   // get store id from request param
@@ -64,9 +64,9 @@ const createNewStore = async (req, res, next) => {
   // check if the owner id (user) exists
   let owner;
   try {
-    owner = await UserModel.findById(ownerId);
+    owner = await User.findById(ownerId);
   } catch (error) {
-    console.log(error);
+    console.log("======================");
     return next(
       new HttpError("Failed to create new store with this owner", 500)
     );
@@ -74,20 +74,20 @@ const createNewStore = async (req, res, next) => {
   if (!owner) {
     return next(new HttpError("this owner is no longer availabe", 404));
   }
+  console.log("======================");
   // insert store in mongodb and update user stores
   try {
     const session = await mongoose.startSession();
     session.startTransaction();
-
     const storeModel = new StoreModel(createdStore);
     await storeModel.save({ session: session });
-    owner.stores.push(storeModel);
+    owner.ownedStores.push(storeModel);
     await owner.save();
     await session.commitTransaction();
     console.log("inserted<<<<");
   } catch (e) {
     return next(
-      new HttpError("Failed to create new store with this owner", 500)
+      new HttpError("session failed-Failed to create new store with this owner", 500)
     );
   }
 
