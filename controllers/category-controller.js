@@ -87,7 +87,7 @@ const updateCategoryById = async (req, res, next) => {
   let updatedCat;
   try {
     console.log("<<<<<<<<<<<<<<<<<- PATCH ->>>>>>>>>>>>>>>>>");
-    console.log(req.body);
+    //console.log(req.body);
     if (newName && newName.length > 0) category.name = newName;
     if (newAvatarPath && newAvatarPath.length > 0)
       category.avatarPath = newAvatarPath;

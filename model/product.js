@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const category = require("./category");
-const store = require("./category");
 
 const modelName = "Product";
 
@@ -18,12 +16,12 @@ const productSchema = new Schema(
     categoryId: {
       type: mongoose.Types.ObjectId,
       required: true,
-      ref: category.modelName,
+      ref: 'Category',
     },
     storeId: {
       type: mongoose.Types.ObjectId,
       required: true,
-      ref: store.modelName,
+      ref: 'Store',
     },
   },
   { timestamps: { createdAt: "createdAt" } }

@@ -13,9 +13,9 @@ router.get("/user/:owner_id", storesController.getStoreByOwnerId);
 router.post("/", storesController.createNewStore);
 
 // patch request to update place
-// router.patch('/:store_id', storesController.updateStore);
+router.patch('/:store_id', storesController.updateStore);
 
-// delete request to handle delete process
-// router.delete('/:store_id', storesController.deleteStore);
+//delete request to handle delete process
+router.delete('/:store_id', storesController.deleteStore);
 
 module.exports = router;
