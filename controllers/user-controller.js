@@ -1,6 +1,6 @@
 const { validationResult } = require("express-validator");
-const bcrypt = require("bcrypt");
-const emailValidator = require("email-validator"); // is better than is email
+const bcrypt = require("bcryptjs");
+const emailValidator = require("email-validator"); // is better than isemail
 const HttpError = require("../model/http-error-model");
 const UserModel = require("../model/user");
 const user = require("../model/user");
