@@ -43,7 +43,7 @@ const login = async (req, res, next) => {
   // check password
   const match = await bcrypt.compare(password, existingUser.password);
   if (!match) {
-    return next(new HttpError("password not correct, check it again", 500));
+    return next(new HttpError("password not correct, check it again", 203));
   }
 
   res.status(200).json({
