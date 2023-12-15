@@ -5,6 +5,7 @@ const HttpError = require("../model/http-error-model");
 const UserModel = require("../model/user");
 const user = require("../model/user");
 // const express = require("express");
+var jwt = require("jsonwebtoken");
 
 const getUsers = async (req, res, next) => {
   let users;
@@ -25,7 +26,8 @@ const getUsers = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   // destruct request body
-  const { email, password } = req.body;
+  const { email, password,registerationToken } = req.body;
+
   // validate email
   if (!emailValidator.validate(email)) {
     return next(new HttpError("invalid email format, check your data", 422));
@@ -45,10 +47,20 @@ const login = async (req, res, next) => {
   if (!match) {
     return next(new HttpError("password not correct, check it again", 203));
   }
+  // Signing a token with 1 hour of expiration:
+  const token = jwt.sign(
+    {
+      exp: Math.floor(Date.now() / 1000) + 60 * 60,
+      data: registerationToken,
+    },
+    "secret"
+  );
 
   res.status(200).json({
     code: 200,
     message: "user logged in successfully",
+    token: token,
+    user: existingUser.toObject({ getters: true }),
   });
 };
 
@@ -57,14 +69,7 @@ const signup = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return next(new HttpError("invalid inputs , check your data", 422));
   }
-  const {
-    name,
-    phone,
-    email,
-    password,
-    avatarPath,
-    address,
-  } = req.body;
+  const { name, phone, email, password, avatarPath, address } = req.body;
   // check email format
   if (!emailValidator.validate(email)) {
     return next(new HttpError("invalid email format, check your data", 422));
@@ -107,7 +112,7 @@ const signup = async (req, res, next) => {
     password: hashedPassword,
     avatarPath,
     address,
-    stores : [],
+    stores: [],
   };
   let user;
   try {
