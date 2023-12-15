@@ -5,6 +5,7 @@ const HttpError = require("../model/http-error-model");
 const UserModel = require("../model/user");
 const user = require("../model/user");
 // const express = require("express");
+var jwt = require("jsonwebtoken");
 
 const getUsers = async (req, res, next) => {
   let users;
@@ -25,7 +26,8 @@ const getUsers = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   // destruct request body
-  const { email, password } = req.body;
+  const { email, password, registrationToken } = req.body;
+
   // validate email
   if (!emailValidator.validate(email)) {
     return next(new HttpError("invalid email format, check your data", 422));
@@ -45,10 +47,20 @@ const login = async (req, res, next) => {
   if (!match) {
     return next(new HttpError("password not correct, check it again", 203));
   }
+  // Signing a token with 1 hour of expiration:
+  const token = jwt.sign(
+    {
+      exp: Math.floor(Date.now() / 1000) + 60 * 60,
+      data: registrationToken,
+    },
+    "secret"
+  );
 
   res.status(200).json({
     code: 200,
     message: "user logged in successfully",
+    token: token,
+    user: existingUser.toObject({ getters: true }),
   });
 };
 
@@ -64,6 +76,7 @@ const signup = async (req, res, next) => {
     password,
     avatarPath,
     address,
+    registrationToken,
   } = req.body;
   // check email format
   if (!emailValidator.validate(email)) {
@@ -94,7 +107,6 @@ const signup = async (req, res, next) => {
   try {
     const salt = bcrypt.genSaltSync(10);
     hashedPassword = bcrypt.hashSync(password, salt);
-    console.log(hashedPassword);
   } catch (error) {
     return next(new HttpError("unable to sign up something went wrong", 500));
   }
@@ -107,7 +119,8 @@ const signup = async (req, res, next) => {
     password: hashedPassword,
     avatarPath,
     address,
-    stores : [],
+    registrationToken,
+    stores: [],
   };
   let user;
   try {
@@ -116,10 +129,13 @@ const signup = async (req, res, next) => {
   } catch (e) {
     return next(new HttpError("could not signup", 500));
   }
+  // remove password before sending response
+  user.password = undefined;
+  user.__v = undefined;
   res.status(200).json({
     code: 200,
     message: "user signed up successfully",
-    user: user.toObject({ getters: true }),
+    user: user.toJSON({ getters: true }),
   });
 };
 
