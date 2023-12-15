@@ -26,7 +26,7 @@ const getUsers = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   // destruct request body
-  const { email, password,registerationToken } = req.body;
+  const { email, password, registrationToken } = req.body;
 
   // validate email
   if (!emailValidator.validate(email)) {
@@ -51,7 +51,7 @@ const login = async (req, res, next) => {
   const token = jwt.sign(
     {
       exp: Math.floor(Date.now() / 1000) + 60 * 60,
-      data: registerationToken,
+      data: registrationToken,
     },
     "secret"
   );
@@ -69,7 +69,15 @@ const signup = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return next(new HttpError("invalid inputs , check your data", 422));
   }
-  const { name, phone, email, password, avatarPath, address } = req.body;
+  const {
+    name,
+    phone,
+    email,
+    password,
+    avatarPath,
+    address,
+    registrationToken,
+  } = req.body;
   // check email format
   if (!emailValidator.validate(email)) {
     return next(new HttpError("invalid email format, check your data", 422));
@@ -99,7 +107,6 @@ const signup = async (req, res, next) => {
   try {
     const salt = bcrypt.genSaltSync(10);
     hashedPassword = bcrypt.hashSync(password, salt);
-    console.log(hashedPassword);
   } catch (error) {
     return next(new HttpError("unable to sign up something went wrong", 500));
   }
@@ -112,6 +119,7 @@ const signup = async (req, res, next) => {
     password: hashedPassword,
     avatarPath,
     address,
+    registrationToken,
     stores: [],
   };
   let user;
@@ -121,10 +129,13 @@ const signup = async (req, res, next) => {
   } catch (e) {
     return next(new HttpError("could not signup", 500));
   }
+  // remove password before sending response
+  user.password = undefined;
+  user.__v = undefined;
   res.status(200).json({
     code: 200,
     message: "user signed up successfully",
-    user: user.toObject({ getters: true }),
+    user: user.toJSON({ getters: true }),
   });
 };
 

@@ -14,6 +14,7 @@ const userSchema = new Schema(
     password: { type: String, required: true, minlength: 6 },
     avatarPath: { type: String, required: true },
     address: { type: String, required: true },
+    registrationToken: { type: String, required: true },
     ownedStores : [{type : mongoose.Types.ObjectId ,required: true , ref : 'Store'}]
   },
   { timestamps: { createdAt: "createdAt" } }
